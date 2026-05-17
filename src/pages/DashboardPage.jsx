@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-slide">
-      <div className="page-header"><h2>Welcome back, {profile?.full_name?.split(' ')[0]} \u{1F44B}</h2><p>Here's your goal tracking overview</p></div>
+      <div className="page-header"><h2>Welcome back, {profile?.full_name?.split(' ')[0]} 👋</h2><p>Here's your goal tracking overview</p></div>
       <div className="card-grid card-grid-4" style={{ marginBottom: 24 }}>
         {statCards.map(sc => (
           <div key={sc.label} className="stat-card">
