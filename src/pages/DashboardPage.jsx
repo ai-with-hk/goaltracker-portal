@@ -10,6 +10,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ totalGoals: 0, approved: 0, pending: 0, avgScore: 0 });
   const [recentSheets, setRecentSheets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTourBtn, setShowTourBtn] = useState(localStorage.getItem('tourDismissed') !== 'true');
 
   useEffect(() => { if (profile) load(); }, [profile]);
 
@@ -33,8 +34,6 @@ export default function DashboardPage() {
     { label: 'Pending Review', value: stats.pending, icon: Users, color: 'var(--yellow)', bg: 'var(--yellow-bg)' },
     { label: 'Avg Score', value: `${stats.avgScore.toFixed(0)}%`, icon: TrendingUp, color: 'var(--blue)', bg: 'var(--blue-bg)' },
   ];
-
-  const [showTourBtn, setShowTourBtn] = useState(localStorage.getItem('tourDismissed') !== 'true');
 
   function startTour() {
     if (!window.driver) return toast.info('Tour is loading, please try again in a moment.');
