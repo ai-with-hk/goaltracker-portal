@@ -39,14 +39,8 @@ export function AuthProvider({ children }) {
     setProfile(null);
   }
 
-  async function switchRole(role) {
-    if (!profile) return;
-    await supabase.from('profiles').update({ role }).eq('id', profile.id);
-    setProfile(prev => ({ ...prev, role }));
-  }
-
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signOut, switchRole, loadProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signOut, loadProfile }}>
       {children}
     </AuthContext.Provider>
   );
