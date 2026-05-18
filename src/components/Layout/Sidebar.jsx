@@ -2,18 +2,19 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { LayoutDashboard, Target, ClipboardCheck, Users, Calendar, FileText, BarChart3, Shield, AlertTriangle, LogOut, Unlock, Share2 } from 'lucide-react';
 
-const employeeNav = [{ section: 'Goals', items: [{ to: '/goals', icon: Target, label: 'My Goals' }, { to: '/goals/update', icon: ClipboardCheck, label: 'Quarterly Update' }] }];
-const managerNav = [{ section: 'Team', items: [{ to: '/team', icon: Users, label: 'Team Goals' }, { to: '/team/checkin', icon: ClipboardCheck, label: 'Check-ins' }, { to: '/team/shared', icon: Share2, label: 'Shared Goals' }] }];
-const adminNav = [{ section: 'Administration', items: [{ to: '/admin/cycles', icon: Calendar, label: 'Cycle Management' }, { to: '/admin/users', icon: Users, label: 'User Management' }, { to: '/admin/unlock', icon: Unlock, label: 'Goal Unlock' }, { to: '/admin/audit', icon: Shield, label: 'Audit Logs' }, { to: '/admin/escalation', icon: AlertTriangle, label: 'Escalation' }] }];
-const commonNav = [{ section: 'Insights', items: [{ to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' }, { to: '/reports', icon: FileText, label: 'Reports' }, { to: '/analytics', icon: BarChart3, label: 'Analytics' }] }];
+const overviewNav = { section: 'Overview', items: [{ to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' }, { to: '/analytics', icon: BarChart3, label: 'Analytics' }, { to: '/reports', icon: FileText, label: 'Reports' }] };
+const personalNav = { section: 'My Workspace', items: [{ to: '/goals', icon: Target, label: 'My Goals' }, { to: '/goals/update', icon: ClipboardCheck, label: 'Quarterly Update' }] };
+const teamNav = { section: 'Team Workspace', items: [{ to: '/team', icon: Users, label: 'Team Goals' }, { to: '/team/shared', icon: Share2, label: 'Shared Goals' }, { to: '/team/checkin', icon: ClipboardCheck, label: 'Check-ins' }] };
+const adminNav = { section: 'Administration', items: [{ to: '/admin/cycles', icon: Calendar, label: 'Cycle Management' }, { to: '/admin/unlock', icon: Unlock, label: 'Goal Unlock' }, { to: '/admin/escalation', icon: AlertTriangle, label: 'Escalation' }, { to: '/admin/audit', icon: Shield, label: 'Audit Logs' }, { to: '/admin/users', icon: Users, label: 'User Management' }] };
 
 export default function Sidebar() {
   const { profile, signOut } = useAuth();
   const role = profile?.role || 'employee';
-  let sections = [...commonNav];
-  if (role === 'employee' || role === 'manager') sections = [...employeeNav, ...sections];
-  if (role === 'manager') sections = [...managerNav, ...sections];
-  if (role === 'admin') sections = [...managerNav, ...adminNav, ...sections];
+  
+  let sections = [overviewNav];
+  if (role === 'employee' || role === 'manager') sections.push(personalNav);
+  if (role === 'manager' || role === 'admin') sections.push(teamNav);
+  if (role === 'admin') sections.push(adminNav);
   const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?';
   return (
     <aside className="sidebar">

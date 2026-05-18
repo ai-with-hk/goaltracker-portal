@@ -34,14 +34,20 @@ export default function DashboardPage() {
     { label: 'Avg Score', value: `${stats.avgScore.toFixed(0)}%`, icon: TrendingUp, color: 'var(--blue)', bg: 'var(--blue-bg)' },
   ];
 
+  const [showTourBtn, setShowTourBtn] = useState(localStorage.getItem('tourDismissed') !== 'true');
+
   function startTour() {
     if (!window.driver) return toast.info('Tour is loading, please try again in a moment.');
     const driverObj = window.driver.js.driver({
       showProgress: true,
+      allowClose: true,
       steps: [
-        { element: '.sidebar', popover: { title: 'Navigation Menu', description: 'Access your Goals, Quarterly Updates, and Insights from here.', side: "right", align: 'start' } },
-        { element: '.stat-card', popover: { title: 'Performance Stats', description: 'Track your total goals, approvals, and average scores at a glance.', side: "bottom", align: 'start' } },
-        { popover: { title: 'Ready to Start?', description: 'Navigate to "My Goals" to create and submit your Goal Sheet for manager approval.' } }
+        { popover: { title: 'Welcome to GoalTracker! 🎉', description: 'This portal is designed to help you align your personal objectives with company goals. Let\'s take a quick tour to get you started!', align: 'center' } },
+        { element: '.sidebar', popover: { title: 'Navigation Hub', description: 'Your main menu. From here, you can access your Goals, submit Quarterly Updates, and view insights.', side: "right", align: 'start' } },
+        { element: '.page-header', popover: { title: 'Your Dashboard', description: 'This is your command center. It provides a real-time snapshot of your performance and goal statuses.', side: "bottom", align: 'start' } },
+        { element: '.card-grid-4', popover: { title: 'Key Metrics', description: 'Track how many goals you have, how many are approved, and your average progress score across all quarters.', side: "bottom", align: 'start' } },
+        { element: '.table-container', popover: { title: 'Recent Activity', description: 'Your most recent goal sheets will appear here along with their current status (e.g., Draft, Submitted, Approved, or Returned).', side: "top", align: 'center' } },
+        { popover: { title: 'Ready to Start?', description: 'Click on "My Goals" in the sidebar to create your first Goal Sheet and submit it to your manager for approval. Good luck!', align: 'center' } }
       ]
     });
     driverObj.drive();
@@ -59,10 +65,15 @@ export default function DashboardPage() {
           <h2>Welcome back, {profile?.full_name?.split(' ')[0]} 👋</h2>
           <p>Here's your goal tracking overview</p>
         </div>
-        {profile?.role === 'employee' && (
-          <button className="btn btn-primary" onClick={startTour} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
-            🧭 Start Guided Tour
-          </button>
+        {profile?.role === 'employee' && showTourBtn && (
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button className="btn btn-primary" onClick={startTour} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+              🧭 Start Guided Tour
+            </button>
+            <button className="btn btn-ghost" onClick={() => { localStorage.setItem('tourDismissed', 'true'); setShowTourBtn(false); }} title="Dismiss Tour Button" style={{ padding: '8px', color: 'var(--text-muted)' }}>
+              ✕
+            </button>
+          </div>
         )}
       </div>
 
