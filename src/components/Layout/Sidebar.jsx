@@ -22,7 +22,7 @@ export default function Sidebar() {
         {sections.map(section => (
           <div key={section.section} className="sidebar-section">
             <div className="sidebar-section-title">{section.section}</div>
-            {section.items.map(item => (<NavLink key={item.to} to={item.to} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><item.icon size={18} />{item.label}</NavLink>))}
+            {section.items.map(item => (<NavLink key={item.to} to={item.to} end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><item.icon size={18} />{item.label}</NavLink>))}
           </div>
         ))}
       </nav>

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Download } from 'lucide-react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Title, Tooltip, Legend, Filler);
 
@@ -12,6 +14,8 @@ export default function AnalyticsPage() {
   const [sheets, setSheets] = useState([]);
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const exportRef = useRef(null);
 
   useEffect(() => { load(); }, []);
 
@@ -19,6 +23,23 @@ export default function AnalyticsPage() {
     const { data: s } = await supabase.from('goal_sheets').select('*, employee:profiles!goal_sheets_employee_id_fkey(full_name, department:departments(name)), goals(*, thrust_area:thrust_areas(name), quarterly_achievements(*))');
     setSheets(s || []); setGoals((s || []).flatMap(sh => sh.goals || [])); setLoading(false);
   }
+
+  const exportPDF = async () => {
+    if (!exportRef.current) return;
+    setExporting(true);
+    try {
+      const canvas = await html2canvas(exportRef.current, { scale: 2, backgroundColor: '#0a0e1a' });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('GoalTracker_Board_Report.pdf');
+    } catch (e) {
+      console.error(e);
+    }
+    setExporting(false);
+  };
 
   const statusCounts = { draft: 0, submitted: 0, approved: 0, returned: 0, locked: 0 };
   sheets.forEach(s => { statusCounts[s.status] = (statusCounts[s.status] || 0) + 1; });
@@ -41,7 +62,16 @@ export default function AnalyticsPage() {
 
   return (
     <div className="animate-slide">
-      <div className="page-header"><h2><BarChart3 size={20} style={{ display: 'inline', marginRight: 8 }} />Analytics Dashboard</h2><p>Goal achievement trends, distributions, and organizational insights</p></div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2><BarChart3 size={20} style={{ display: 'inline', marginRight: 8 }} />Analytics Dashboard</h2>
+          <p>Goal achievement trends, distributions, and organizational insights</p>
+        </div>
+        <button className="btn btn-primary" onClick={exportPDF} disabled={exporting}>
+          <Download size={16} /> {exporting ? 'Generating PDF...' : 'Export Board Report'}
+        </button>
+      </div>
+      <div ref={exportRef} style={{ padding: '20px 0' }}>
       <div className="card-grid card-grid-2" style={{ marginBottom: 20 }}>
         <div className="card"><div className="card-header"><h3>Goal Sheet Status</h3></div><div style={{ height: 250, display: 'flex', justifyContent: 'center' }}><Doughnut data={statusData} options={{ ...chartOpts, scales: undefined, cutout: '60%' }} /></div></div>
         <div className="card"><div className="card-header"><h3>QoQ Achievement Trend</h3></div><div style={{ height: 250 }}><Line data={trendData} options={chartOpts} /></div></div>
@@ -49,6 +79,7 @@ export default function AnalyticsPage() {
       <div className="card-grid card-grid-2">
         <div className="card"><div className="card-header"><h3>Goals by Thrust Area</h3></div><div style={{ height: 250 }}><Bar data={taData} options={{ ...chartOpts, indexAxis: 'y' }} /></div></div>
         <div className="card"><div className="card-header"><h3>Department Completion</h3></div><div style={{ height: 250 }}><Bar data={deptData} options={chartOpts} /></div></div>
+      </div>
       </div>
     </div>
   );

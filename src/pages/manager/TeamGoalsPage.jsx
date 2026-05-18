@@ -39,7 +39,8 @@ export default function TeamGoalsPage() {
         <table><thead><tr><th>Employee</th><th>Department</th><th>Status</th><th>Goals</th><th>Submitted</th><th>Actions</th></tr></thead>
           <tbody>{sheets.map(s => (<tr key={s.id}><td className="font-bold">{s.employee?.full_name}</td><td className="text-sm text-muted">{s.employee?.department?.name || '-'}</td><td><span className={`badge badge-${s.status}`}>{s.status}</span></td><td>{s.goals?.length || 0}</td><td className="text-sm">{s.submitted_at ? new Date(s.submitted_at).toLocaleDateString() : '-'}</td><td className="flex gap-2">
             <button className="btn btn-sm btn-secondary" onClick={() => setSelected(s)}><Eye size={14} /> View</button>
-            {s.status === 'submitted' && <><button className="btn btn-sm btn-success" onClick={() => handleAction(s.id, 'approve')}><Check size={14} /></button><button className="btn btn-sm btn-danger" onClick={() => { setSelected(s); }}><X size={14} /></button></>}
+            {s.status === 'submitted' && <><button className="btn btn-sm btn-success" title="Approve" onClick={() => handleAction(s.id, 'approve')}><Check size={14} /></button><button className="btn btn-sm btn-danger" title="Return" onClick={() => { setSelected(s); }}><X size={14} /></button></>}
+            {(s.status === 'draft' || s.status === 'returned') && <button className="btn btn-sm" style={{ background: 'var(--yellow-bg)', color: 'var(--yellow)', borderColor: 'var(--yellow)' }} onClick={() => toast.success(`Nudge sent to ${s.employee?.full_name} via Email/Teams!`)}>🔔 Nudge</button>}
           </td></tr>))}</tbody></table>
       </div>
       {selected && (

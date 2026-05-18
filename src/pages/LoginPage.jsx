@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Target, Lock } from 'lucide-react';
+import { useToast } from '../components/Toast';
 
 export default function LoginPage() {
   const { signIn } = useAuth();
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -47,7 +49,7 @@ export default function LoginPage() {
           <div className="form-group">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
-              <a href="#" style={{ fontSize: 11, color: 'var(--accent)' }}>Forgot password?</a>
+              <button type="button" onClick={() => toast.info('Please contact your Manager, HR, or IT Admin to reset your password.')} style={{ fontSize: 11, color: 'var(--accent)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>Forgot password?</button>
             </div>
             <input 
               className="form-input" 

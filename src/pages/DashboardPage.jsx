@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Target, ClipboardCheck, Users, TrendingUp } from 'lucide-react';
+import { useToast } from '../components/Toast';
 
 export default function DashboardPage() {
   const { profile } = useAuth();
+  const toast = useToast();
   const [stats, setStats] = useState({ totalGoals: 0, approved: 0, pending: 0, avgScore: 0 });
   const [recentSheets, setRecentSheets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,9 +34,55 @@ export default function DashboardPage() {
     { label: 'Avg Score', value: `${stats.avgScore.toFixed(0)}%`, icon: TrendingUp, color: 'var(--blue)', bg: 'var(--blue-bg)' },
   ];
 
+  function startTour() {
+    if (!window.driver) return toast.info('Tour is loading, please try again in a moment.');
+    const driverObj = window.driver.js.driver({
+      showProgress: true,
+      steps: [
+        { element: '.sidebar', popover: { title: 'Navigation Menu', description: 'Access your Goals, Quarterly Updates, and Insights from here.', side: "right", align: 'start' } },
+        { element: '.stat-card', popover: { title: 'Performance Stats', description: 'Track your total goals, approvals, and average scores at a glance.', side: "bottom", align: 'start' } },
+        { popover: { title: 'Ready to Start?', description: 'Navigate to "My Goals" to create and submit your Goal Sheet for manager approval.' } }
+      ]
+    });
+    driverObj.drive();
+  }
+
+  const badges = [];
+  if (stats.approved > 0) badges.push({ icon: '🚀', name: 'Fast Starter', desc: 'First goal sheet approved' });
+  if (stats.avgScore >= 90) badges.push({ icon: '🔥', name: 'Overachiever', desc: 'Avg progress above 90%' });
+  if (stats.avgScore > 0 && stats.avgScore < 90) badges.push({ icon: '🎯', name: 'On Track', desc: 'Making steady progress' });
+
   return (
     <div className="animate-slide">
-      <div className="page-header"><h2>Welcome back, {profile?.full_name?.split(' ')[0]} 👋</h2><p>Here's your goal tracking overview</p></div>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2>Welcome back, {profile?.full_name?.split(' ')[0]} 👋</h2>
+          <p>Here's your goal tracking overview</p>
+        </div>
+        {profile?.role === 'employee' && (
+          <button className="btn btn-primary" onClick={startTour} style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}>
+            🧭 Start Guided Tour
+          </button>
+        )}
+      </div>
+
+      {badges.length > 0 && profile?.role === 'employee' && (
+        <div className="card" style={{ marginBottom: 24, padding: '16px 20px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))', borderColor: 'rgba(99, 102, 241, 0.2)' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-light)', marginBottom: 12 }}>YOUR ACHIEVEMENTS</div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {badges.map(b => (
+              <div key={b.name} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--bg-card)', padding: '10px 16px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                <span style={{ fontSize: 24 }}>{b.icon}</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{b.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{b.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="card-grid card-grid-4" style={{ marginBottom: 24 }}>
         {statCards.map(sc => (
           <div key={sc.label} className="stat-card">

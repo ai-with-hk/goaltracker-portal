@@ -74,8 +74,11 @@ export default function UserManagementPage() {
       toast.success("User updated successfully");
     } else {
       if (!userForm.password) return toast.error("Password is required for new users");
-      toast.error("User creation requires Supabase Admin API which needs a backend edge function. Simulated for demo.");
-      // Note: In production, this would call a Supabase Edge Function that uses the service_role key to create the auth.users record.
+      const { data, error } = await supabase.functions.invoke('manage-users', {
+        body: { email: userForm.email, password: userForm.password, full_name: userForm.full_name, role: userForm.role, department_id: userForm.department_id, manager_id: userForm.manager_id }
+      });
+      if (error) { toast.error(error.message || "Failed to create user"); return; }
+      toast.success("User created successfully!");
     }
     setShowUserForm(false);
     load();
@@ -84,7 +87,6 @@ export default function UserManagementPage() {
   async function handleDeleteUser(id) {
     if (!window.confirm("Are you sure you want to delete this user? This may fail if they have associated records.")) return;
     toast.error("User deletion requires Supabase Admin API. Simulated for demo.");
-    // Note: In production, this would call a Supabase Edge Function with service_role key.
   }
 
   const managers = users.filter(u => u.role === 'manager' || u.role === 'admin');
