@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/120x120/4f46e5/ffffff?text=GT" alt="GoalTracker Logo" width="100" style="border-radius: 20px; margin-bottom: 20px;" />
+  <img src="./public/logo.png" alt="GoalTracker Logo" width="120" style="border-radius: 20px; margin-bottom: 20px;" />
   <h1>GoalTracker 🎯</h1>
   <p><strong>Enterprise-Grade Performance & Goal Management Portal</strong></p>
   <p><em>Aligning workforce objectives with organizational success through transparency and real-time tracking.</em></p>
