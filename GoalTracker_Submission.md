@@ -6,7 +6,7 @@ GoalTracker is a comprehensive, production-ready Performance Management Portal d
 **Our mission:** To make goal setting intuitive for employees, effortless to track for managers, and completely transparent for enterprise administrators.
 
 ## 🔗 Project Links
-- **Working Live Demo:** [GoalTracker on Vercel](https://goaltracker-portal-knj02bkht-ai-with-hsk-s-projects.vercel.app)
+- **Working Live Demo:** [GoalTracker on Vercel](https://goaltracker-portal.vercel.app/)
 - **Source Code Repository:** [GitHub Repository](https://github.com/ai-with-hk/goaltracker-portal)
 
 ## 🚀 Standout Features (Why We Win)

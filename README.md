@@ -30,6 +30,8 @@ Organizations often struggle with fragmented goal-tracking methods—relying on 
 
 ## 🚀 Live Demo & Credentials
 
+**Live Demo:** [https://goaltracker-portal.vercel.app/](https://goaltracker-portal.vercel.app/)
+
 The portal is designed with Role-Based Access Control (RBAC). Please use the following credentials to experience the different perspectives of the platform:
 
 | Role | Email | Password | Access Level |
