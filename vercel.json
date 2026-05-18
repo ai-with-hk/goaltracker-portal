@@ -1,3 +1,6 @@
 {
-  "name": "goaltracker-portal"
+  "name": "goaltracker-portal",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

@@ -20,23 +20,20 @@ export default function TopBar({ onToggleSidebar }) {
   }, [profile]);
 
   async function loadNotifications() {
-    let query = supabase.from('goal_sheets').select('id, status, created_at, updated_at, employee:profiles!goal_sheets_employee_id_fkey(full_name)');
-    
     if (profile.role === 'employee') {
-      query = query.eq('employee_id', profile.id);
-    } else if (profile.role === 'manager') {
-      query = query.eq('manager_id', profile.id);
-    }
-    
-    const { data } = await query.order('updated_at', { ascending: false }).limit(5);
-    
-    if (data) {
-      setNotifications(data.map(sheet => ({
-        id: sheet.id,
-        title: profile.role === 'employee' ? `Goal sheet ${sheet.status}` : `${sheet.employee?.full_name}'s sheet is ${sheet.status}`,
-        time: new Date(sheet.updated_at).toLocaleString(),
-        status: sheet.status
-      })));
+      const { data } = await supabase.from('goal_sheets').select('id, status, created_at, updated_at, employee:profiles!goal_sheets_employee_id_fkey(full_name)').eq('employee_id', profile.id).order('updated_at', { ascending: false }).limit(5);
+      if (data) {
+        setNotifications(data.map(sheet => ({ id: sheet.id, title: `Goal sheet ${sheet.status}`, time: new Date(sheet.updated_at).toLocaleString(), status: sheet.status })));
+      }
+    } else if (profile.role === 'manager' || profile.role === 'admin') {
+      const { data: team } = await supabase.from('profiles').select('id').eq('manager_id', profile.id);
+      const teamIds = team?.map(t => t.id) || [];
+      if (teamIds.length === 0) return setNotifications([]);
+      
+      const { data } = await supabase.from('goal_sheets').select('id, status, created_at, updated_at, employee:profiles!goal_sheets_employee_id_fkey(full_name)').in('employee_id', teamIds).order('updated_at', { ascending: false }).limit(5);
+      if (data) {
+        setNotifications(data.map(sheet => ({ id: sheet.id, title: `${sheet.employee?.full_name}'s sheet is ${sheet.status}`, time: new Date(sheet.updated_at).toLocaleString(), status: sheet.status })));
+      }
     }
   }
 
