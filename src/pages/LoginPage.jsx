@@ -27,7 +27,9 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <div className="logo" style={{ marginBottom: 40 }}>
-          <div className="logo-icon"><Target size={24} /></div>
+          <div className="logo-icon" style={{ background: 'transparent', width: 48, height: 48 }}>
+            <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', borderRadius: '12px', objectFit: 'contain' }} />
+          </div>
           <div>
             <h2>GoalTracker</h2>
             <div className="subtitle">Enterprise Performance Management</div>

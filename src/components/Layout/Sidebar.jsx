@@ -18,7 +18,12 @@ export default function Sidebar() {
   const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?';
   return (
     <aside className="sidebar">
-      <div className="sidebar-brand"><div className="sidebar-brand-icon">G</div><div><h1>GoalTracker</h1><span>Performance Portal</span></div></div>
+      <div className="sidebar-brand">
+        <div className="sidebar-brand-icon" style={{ background: 'transparent', padding: 0 }}>
+          <img src="/logo.png" alt="Logo" style={{ width: '100%', height: '100%', borderRadius: '8px', objectFit: 'contain' }} />
+        </div>
+        <div><h1>GoalTracker</h1><span>Performance Portal</span></div>
+      </div>
       <nav className="sidebar-nav">
         {sections.map(section => (
           <div key={section.section} className="sidebar-section">
